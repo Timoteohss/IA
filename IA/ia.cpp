@@ -1,43 +1,43 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 
 class DNA {
 public:
 
 	DNA(int iTamanho, double taxaMut) {
-		//inicia aleatóriedade
+		//inicia aleatÃ³riedade
 		std::random_device rdt;
 		std::mt19937 mtt(rdt());
 
-		//letra aleatória dentro dos ascii
+		//letra aleatÃ³ria dentro dos ascii
 		std::uniform_int_distribution<int> distt(32, 128);
 
 		//Popula o novo array com novos caracteres
-		for (int i = 0; i < iTamanho; i++) {
+		for (int i = 0; i < iTamanho; ++i) {
 			cGene.push_back((char)distt(mtt));
 		}
 
-		//inicia o fitness e mutação
+		//inicia o fitness e mutaÃ§Ã£o
 		dFit = 0.0f, dMuta = taxaMut;
 	};
 
 	DNA(std::shared_ptr<DNA> pai1, std::shared_ptr<DNA> pai2) {
-		//inicia aleatóriedade
+		//inicia aleatÃ³riedade
 		std::random_device rdt;
 		std::mt19937 mtt(rdt());
 
-		//valor aleatório dentro do gene
+		//valor aleatÃ³rio dentro do gene
 		std::uniform_int_distribution<int> distt(0, pai1->getTamGene());
 
-		//Ajudata um meio de determinar de qual pai pegar seu filho
+		//Um meio de determinar de qual pai pegar seu filho
 		int m = distt(mtt);
 
-		//Começa a preencher o cGenes
-		for(int i = 0; i < pai1->getTamGene(); i++) {
+		//ComeÃ§a a preencher o cGenes
+		for(int i = 0; i < pai1->getTamGene(); ++i) {
 			if (i > m) {
 				cGene.push_back(pai1->getGeneAt(i));
 			}
 			else {
-				cGene.push_back(pai1->getGeneAt(i));
+				cGene.push_back(pai2->getGeneAt(i));
 			}
 		}
 
@@ -56,7 +56,7 @@ public:
 	void setFit(std::string sAlvo) {
 		if (sAlvo != "") {
 			int pontua = 0;
-			for (int i = 0; i < cGene.size(); i++) {
+			for (int i = 0; i < cGene.size(); ++i) {
 				if (cGene[i] == sAlvo.at(i)) {
 					++pontua;
 				}
@@ -80,23 +80,23 @@ public:
 		return cGene[i];
 	};
 
-	//Genes de mutação
+	//Genes de mutaÃ§Ã£o
 	void Mutacao() {
-		//inicia aleatóriedade
+		//inicia aleatÃ³riedade
 		std::random_device rdt;
 		std::mt19937 mtt(rdt());
 
 		//valor aleatorio entre 1 e 0
-		std::uniform_int_distribution<int> distt(0, 1);
+		std::uniform_real_distribution<double> distt(0, 1);
 
 		//caractere aleatorio
 		std::uniform_int_distribution<int> dist2(32, 128);
 
-		for (int i = 0; i < cGene.size(); i++) {
+		for (int i = 0; i < cGene.size(); ++i) {
 			double t = distt(mtt);
-if (t < dMuta) {
-	cGene[i] = dist2(mtt);
-}
+			if (t < dMuta) {
+				cGene[i] = dist2(mtt);
+			}
 		}
 	};
 
@@ -110,9 +110,8 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	std::random_device rd;
 	std::mt19937 mt(rd());
 
-	//População de DNA
+	//PopulaÃ§Ã£o de DNA
 	std::vector<std::shared_ptr<DNA>> vPopulacao;
-	std::vector<std::shared_ptr<DNA>> vPopulacaoTemp;
 	std::vector<std::shared_ptr<DNA>> vPool;
 
 	//Variaveis
@@ -124,30 +123,34 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	std::cout << "Algoritmo Genetico utilizando C++.\n----------------------------\n" << std::endl;
 	//system("pause");
 
-	//Pega a população do usuário
+	//Pega a populaÃ§Ã£o do usuÃ¡rio
 	std::cout << "Digite o tamanho da populacao: ";
 	std::getline(std::cin, sTempString);
 	iTamPopulacao = std::stoi(sTempString);
 	std::cout << "Tamanho selecionado: " << iTamPopulacao << std::endl;
 
-	//Pega a taxa de mutação do usuário
+	//Pega a taxa de mutaÃ§Ã£o do usuÃ¡rio
 	std::cout << "Digite a taxa de mutacao: ";
 	std::getline(std::cin, sTempString);
 	dTaxMuta = std::stod(sTempString);
 	std::cout << "Taxa de mutacao selecionada: " << dTaxMuta << std::endl;
 	sTempString = "";
 
-	//Pega o alvo do usuário
+	//Pega o alvo do usuÃ¡rio
 	std::cout << "Digite o alvo a ser alcancado: ";
 	std::getline(std::cin, sAlvo);
 	std::cout << std::endl;
+
+	time_t ti, tf;
+	time(&ti);
+
 
 	//inicia auxiliares
 	iTamGene = sAlvo.size();
 	bool bAtingiuAlvo = false;
 	unsigned long lGeracao = 1;
 
-	//inica população
+	//inica populaÃ§Ã£o
 	for (int i = 0; i < iTamPopulacao; ++i) {
 		std::shared_ptr<DNA> temp(new DNA(iTamGene, dTaxMuta));
 		vPopulacao.push_back(temp);
@@ -155,8 +158,8 @@ int _tmain(int argc, _TCHAR* argv[]) {
 
 	//inicia o jogo da vida
 	while (!bAtingiuAlvo) {
-		system("cls");
-		//Imprime informações
+		//system("cls");
+		//Imprime informaÃ§Ãµes
 		std::cout << "Geracao: " << lGeracao << std::endl;
 
 		for (auto it = vPopulacao.begin(); it != vPopulacao.end(); ++it) {
@@ -175,11 +178,13 @@ int _tmain(int argc, _TCHAR* argv[]) {
 
 		//Imprime resultados e mostra se encontrou o perfeito
 		std::cout << "Maior Fitness: " << maior * 100.0 << "% com a sequencia de gene: "
-			<< vPopulacao.at(index)->getGeneString() << " de tamanho: " << vPopulacao.size() << std::endl;
+			<< vPopulacao.at(index)->getGeneString() << std::endl;
 		//system("cls");
 		if (maior == 1) {
 			bAtingiuAlvo = true;
-			std::cout << "\n Acabou. Enter para sair." << std::endl;
+			time(&tf);
+			double seg = difftime(tf, ti);
+			std::cout << "\n Finalizado em " << seg << " segundos." << std::endl;
 			std::cin.ignore();
 		}
 
@@ -187,39 +192,29 @@ int _tmain(int argc, _TCHAR* argv[]) {
 		vPool.clear();
 		for (auto it = vPopulacao.begin(); it != vPopulacao.end(); ++it) {
 			int n = (*it)->getFit() * 100;
-			for (int i = 0; i < n; i++) {
+			for (int i = 0; i < n; ++i) {
 				vPool.push_back((*it));
 			}
 		}
 
-		//NÂO FAZER ISSO, MAS FUNCIONA
-		
-		for (auto it = vPopulacao.begin(); it != vPopulacao.end(); ++it) {
-			if (vPopulacaoTemp.size() > iTamPopulacao / 2) {
-				if ((*it)->getFit() > maior / 2) {
-					vPopulacaoTemp.push_back((*it));
-				}
-			}
-		}
+		//NÃ‚O FAZER ISSO, MAS FUNCIONA
 		vPopulacao.clear();
-		vPopulacao = vPopulacaoTemp;
-		vPopulacaoTemp.clear();
 
-		//junta os casais para recriar a população
+		//junta os casais para recriar a populaÃ§Ã£o
 		std::uniform_int_distribution<int> dist2(0, vPool.size() - 1);
 
-		//Recria a população para o mesmo tamanho com o mesmo DNA
+		//Recria a populaÃ§Ã£o para o mesmo tamanho com o mesmo DNA
 		for (int i = 0; i < iTamPopulacao; ++i) {
 			
 			//Inicia operadores
 			int x = 0;
 			int y = 0;
 
-			//atribui um valor aleatório baseado no tamanho do Pool
+			//atribui um valor aleatÃ³rio baseado no tamanho do Pool
 			x = dist2(mt);
 			y = dist2(mt);
 
-			//Garante que não sejam os mesmos
+			//Garante que nÃ£o sejam os mesmos
 			while (vPool[x] == vPool[y]) {
 				y = dist2(mt);
 			}
@@ -227,10 +222,10 @@ int _tmain(int argc, _TCHAR* argv[]) {
 			//Cria um novo DNA baseado nos pais
 			std::shared_ptr<DNA> temp(new DNA(vPool.at(x), vPool.at(y)));
 
-			//Adiciona mutação
+			//Adiciona mutaÃ§Ã£o
 			temp->Mutacao();
 
-			//Adiciona o novo DNA na população
+			//Adiciona o novo DNA na populaÃ§Ã£o
 			vPopulacao.push_back(temp);
 
 		}
