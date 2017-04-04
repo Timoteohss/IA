@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 
+
 class DNA {
 public:
 
@@ -48,9 +49,13 @@ public:
 		return dMuta;
 	};
 
+	double setTaxaMut() {
+
+	};
+
 	double getFit() {
 		return dFit;
-	};
+	};	
 
 	//Seta o fit baseado no alvo passado
 	void setFit(std::string sAlvo) {
@@ -118,6 +123,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	int iTamGene = 0, iTamPopulacao;
 	double dTaxMuta = 0.01;
 	std::string sTempString, sAlvo;
+	std::vector<std::pair <unsigned long,double> > grafico;
 
 	//Display
 	std::cout << "Algoritmo Genetico utilizando C++.\n----------------------------\n" << std::endl;
@@ -132,6 +138,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	//Pega a taxa de mutação do usuário
 	std::cout << "Digite a taxa de mutacao: ";
 	std::getline(std::cin, sTempString);
+
 	dTaxMuta = std::stod(sTempString);
 	std::cout << "Taxa de mutacao selecionada: " << dTaxMuta << std::endl;
 	sTempString = "";
@@ -167,24 +174,36 @@ int _tmain(int argc, _TCHAR* argv[]) {
 		}
 
 		double maior = 0;
-		int index = 0;
+		int indexMai = 0;
 
 		for (auto it = vPopulacao.begin(); it != vPopulacao.end(); ++it) {
 			if ((*it)->getFit() > maior) {
 				maior = (*it)->getFit();
-				index = it - vPopulacao.begin();
+				indexMai = it - vPopulacao.begin();
 			}
 		}
 
+		grafico.push_back(std::make_pair(lGeracao, maior));
+
 		//Imprime resultados e mostra se encontrou o perfeito
 		std::cout << "Maior Fitness: " << maior * 100.0 << "% com a sequencia de gene: "
-			<< vPopulacao.at(index)->getGeneString() << std::endl;
+			<< vPopulacao.at(indexMai)->getGeneString() << std::endl;
+
 		//system("cls");
 		if (maior == 1) {
 			bAtingiuAlvo = true;
 			time(&tf);
 			double seg = difftime(tf, ti);
 			std::cout << "\n Finalizado em " << seg << " segundos." << std::endl;
+			
+			std::ofstream file;
+			file.open("grafico.txt");
+			for (auto it = grafico.begin(); it != grafico.end(); ++it)
+			{
+				auto it2 = *it;
+				file << it2.first << ":" << it2.second * 100 << std::endl;
+			}
+
 			std::cin.ignore();
 		}
 
